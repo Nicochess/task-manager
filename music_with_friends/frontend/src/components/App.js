@@ -1,7 +1,12 @@
-import React, { Component } from "react";
+import React from "react";
+import HomePage from "./HomePage"
 
 function App(){
-    return(<h1>Testing React and Django Integration</h1>)
+    return(
+        <div>
+            <HomePage />
+        </div>
+    )
 }
 
 export default App
