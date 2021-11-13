@@ -12,7 +12,7 @@ def code_generator():
 
 # Create your models here.
 class Room(models.Model):
-    code = models.CharField(max_length=8, default="", unique=True)
+    code = models.CharField(max_length=8, default=code_generator(), unique=True)
     host = models.CharField(max_length=8, unique=True)
     guest_can_stop = models.BooleanField(null=False, default=False)
     votes_to_skip = models.IntegerField(null=False, default=1)
