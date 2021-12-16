@@ -95,7 +95,6 @@ function App() {
         <Routes>
           <Route
             path="/"
-            exact
             element={
               <>
                 {show && <AddTask onAdd={addTask} />}
@@ -115,7 +114,7 @@ function App() {
         </Routes>
       </div>
       <Routes>
-        <Route path="/" exact element={<Footer />} />
+        <Route path="/" element={<Footer />} />
       </Routes>
     </Router>
   );
