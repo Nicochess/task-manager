@@ -8,7 +8,9 @@ const AddTask = ({ onAdd }) => {
     const onSubmit = (e) => {
         e.preventDefault();
 
-        onAdd({ text, date, reminder })
+        let brDate = date.split('-').reverse().join('/')
+
+        onAdd({ text, date: brDate, reminder })
 
         setText('')
         setDate('')
@@ -29,7 +31,7 @@ const AddTask = ({ onAdd }) => {
       <div className="form-control">
         <label htmlFor="">Date</label>
         <input
-          type="text"
+          type="date"
           placeholder="Add your date"
           value={date}
           onChange={(e) => setDate(e.target.value)}

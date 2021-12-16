@@ -1,22 +1,3 @@
 {
-  "tasks": [
-    {
-      "id": 0,
-      "text": "Oliver birthday",
-      "date": "25/01/2022",
-      "reminder": true
-    },
-    {
-      "text": "Codar em React",
-      "date": "Today",
-      "reminder": true,
-      "id": 2
-    },
-    {
-      "text": "Do a code review",
-      "date": "Today",
-      "reminder": true,
-      "id": 3
-    }
-  ]
+  "tasks": []
 }
