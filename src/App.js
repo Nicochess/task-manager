@@ -1,72 +1,123 @@
 import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
+import About from "./components/About";
 import Tasks from "./components/Tasks";
 import AddTask from "./components/AddTask";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const title = "Task Manager";
 
   const [show, setShow] = useState(false);
 
-  const [tasks, setTasks] = useState([
-    {
-      id: 0,
-      text: "Study React",
-      date: "10/10/2021",
-      reminder: false,
-    },
-    {
-      id: 1,
-      text: "Call to girlfriend",
-      date: "14/12/2021",
-      reminder: false,
-    },
-    {
-      id: 2,
-      text: "Play with brother",
-      date: "15/12/2021",
-      reminder: false,
-    },
-  ]);
+  useEffect(() => {
+    const getTasks = async () => {
+      const serverTasks = await fetchTasks();
+      setTasks(serverTasks);
+    };
+
+    getTasks();
+  }, []);
+
+  const fetchTasks = async () => {
+    const res = await fetch("http://localhost:5000/tasks");
+    const data = await res.json();
+
+    return data;
+  };
+
+  const fetchTask = async (id) => {
+    const res = await fetch(`http://localhost:5000/tasks/${id}`);
+    const data = await res.json();
+
+    return data;
+  };
+
+  const [tasks, setTasks] = useState([]);
 
   // Delete Tasks
-  const deleteTask = (id) => {
+  const deleteTask = async (id) => {
+    await fetch(`http://localhost:5000/tasks/${id}`, {
+      method: "DELETE",
+    });
+
     setTasks(tasks.filter((task) => task.id !== id));
   };
 
   //Toggle the reminder
-  const toggleReminder = (id) => {
+  const toggleReminder = async (id) => {
+    const toggleTask = await fetchTask(id);
+    const updatedTask = { ...toggleTask, reminder: !toggleTask.reminder };
+
+    const res = await fetch(`http://localhost:5000/tasks/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(updatedTask),
+    });
+
+    const data = await res.json();
+
     setTasks(
       tasks.map((task) =>
-        task.id === id ? { ...task, reminder: !task.reminder } : task
+        task.id === id ? { ...task, reminder: data.reminder } : task
       )
     );
   };
 
   //Handle the task data
-  const addTask = (task) => {
-    const id = Math.floor(Math.random() * 10000);
-    const newTask = { id, ...task };
+  const addTask = async (task) => {
+    const res = await fetch("http://localhost:5000/tasks", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(task),
+    });
 
-    setTasks([...tasks, newTask]);
+    const data = await res.json();
+
+    setTasks([...tasks, data]);
   };
 
   return (
-    <div className="container">
-      <Header
-        title={title}
-        onToggle={() => setShow(!show)}
-        buttonName={show ? "Close" : "Open"}
-        color={show ? 'red' : 'green'}
-      />
-      {show && <AddTask onAdd={addTask} />}
-      {tasks.length > 0 ? (
-        <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder} />
-      ) : (
-        "There's no tasks yet"
-      )}
-    </div>
+    <Router>
+      <div className="container">
+        <Header
+          title={title}
+          onToggle={() => setShow(!show)}
+          buttonName={show ? "Close" : "Open"}
+          color={show ? "red" : "green"}
+        />
+        <Routes>
+          <Route
+            path="/"
+            exact
+            element={
+              <>
+                {show && <AddTask onAdd={addTask} />}
+                {tasks.length > 0 ? (
+                  <Tasks
+                    tasks={tasks}
+                    onDelete={deleteTask}
+                    onToggle={toggleReminder}
+                  />
+                ) : (
+                  "There's no tasks yet"
+                )}
+              </>
+            }
+          />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </div>
+      <Routes>
+        <Route path="/" exact element={<Footer />} />
+      </Routes>
+    </Router>
   );
 }
 
